@@ -27,21 +27,18 @@ fn handle_request(mut stream: TcpStream) {
     stream.read(&mut buffer).unwrap();
 
     let get = b"GET / HTTP/1.1\r\n";
+
     // go 404 page if server recieve beside get method.
-    if buffer.starts_with(get) {
-        let mut file = File::open("src/index.html").unwrap();
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap();
-        let response = format!("HTTP/1.1 200 OK\r\n\r\n{}", contents);
-        stream.write(response.as_bytes()).unwrap();
-        stream.flush().unwrap();
+    let (status_line, filename) = if buffer.starts_with(get) {
+        ("HTTP/1.1 200 OK\r\n\r\n", "src/index.html")
     } else {
-        println!("show 404 page.");
-        let mut file = File::open("src/404.html").unwrap();
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap();
-        let response = format!("HTTP/1.1 200 OK\r\n\r\n{}", contents);
-        stream.write(response.as_bytes()).unwrap();
-        stream.flush().unwrap();
-    }
+        ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "src/404.html")
+    };
+
+    let mut file = File::open(filename).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    let response = format!("{}{}", status_line, contents);
+    stream.write(response.as_bytes()).unwrap();
+    stream.flush().unwrap();
 }
