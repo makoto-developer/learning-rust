@@ -23,8 +23,6 @@ fn handle_request(mut stream: TcpStream) {
     let mut file = File::open("src/index.html").unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
-
-
     let response = format!("HTTP/1.1 200 OK\r\n\r\n{}", contents);
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
