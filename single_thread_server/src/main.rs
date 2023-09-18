@@ -2,7 +2,6 @@ use std::io::prelude::*;
 use std::net::TcpStream;
 use std::net::TcpListener;
 use std::fs::File;
-use std::thread;
 
 fn main() {
     print!("boot rust server...\n");
