@@ -21,7 +21,7 @@ fn start_rust_server() {
     let pool = ThreadPool::new(4);
     println!("Starting Rust Web server URL: {}", &server_url);
 
-    for stream in listener.incoming().take(2) {
+    for stream in listener.incoming() {
         let stream = stream.unwrap();
         println!("Connection established!");
 
