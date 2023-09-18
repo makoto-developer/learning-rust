@@ -42,13 +42,13 @@ fn handle_request(mut stream: TcpStream) {
 
     // go 404 page if server recieve beside get method.
     let (status_line, filename) = if buffer.starts_with(get) {
-        ("HTTP/1.1 200 OK\r\n\r\n", "src/index.html")
+        ("HTTP/1.1 200 OK\r\n\r\n", "src/page/index.html")
     } else if buffer.starts_with(sleep) {
         // this is for single thread server test.
         thread::sleep(Duration::from_secs(5));
-        ("HTTP/1.1 200 OK\r\n\r\n", "src/index.html")
+        ("HTTP/1.1 200 OK\r\n\r\n", "src/page/index.html")
     } else {
-        ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "src/404.html")
+        ("HTTP/1.1 404 NOT FOUND\r\n\r\n", "src/page/404.html")
     };
 
     let mut file = File::open(filename).unwrap();

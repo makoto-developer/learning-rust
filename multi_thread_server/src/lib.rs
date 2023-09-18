@@ -18,7 +18,6 @@ impl <F: FnOnce()> FnBox for F {
     }
 }
 
-// トレイトオブジェクトには`dyn`キーワードを追加しなければならないみたい
 type Job = Box<dyn FnBox + Send + 'static>;
 
 impl ThreadPool {
@@ -58,21 +57,16 @@ struct Worker {
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Message>>>) ->
     Worker {
-
         let thread = thread::spawn(move ||{
             loop {
                 let message = receiver.lock().unwrap().recv().unwrap();
-
                 match message {
                     Message::NewJob(job) => {
                         println!("Worker {} got a job; executing.", id);
-
                         job.call_box();
                     },
                     Message::Terminate => {
-                        // ワーカー{}は停止するよう指示された
                         println!("Worker {} was told to terminate.", id);
-
                         break;
                     },
                 }
@@ -93,11 +87,9 @@ impl Drop for ThreadPool {
             self.sender.send(Message::Terminate).unwrap();
         }
 
-        // 全ワーカーを閉じます
         println!("Shutting down all workers.");
 
         for worker in &mut self.workers {
-            // ワーカー{}を閉じます
             println!("Shutting down worker {}", worker.id);
 
             if let Some(thread) = worker.thread.take() {
@@ -106,7 +98,6 @@ impl Drop for ThreadPool {
         }
     }
 }
-
 
 enum Message {
     NewJob(Job),
