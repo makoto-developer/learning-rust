@@ -18,17 +18,19 @@ fn start_rust_server() {
     let server_port = 29000;
     let server_url = format!("127.0.0.1:{}", &server_port);
     let listener = TcpListener::bind(&server_url).unwrap();
-    let pool = ThreadPool::new(8);
+    let pool = ThreadPool::new(4);
     println!("Starting Rust Web server URL: {}", &server_url);
 
-    for stream in listener.incoming() {
-        println!("Connection established!");
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
+        println!("Connection established!");
 
         pool.execute(|| {
             handle_request(stream);
         });
     }
+
+    println!("Shutting down.");
 }
 
 fn handle_request(mut stream: TcpStream) {
